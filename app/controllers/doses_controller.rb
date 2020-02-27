@@ -14,25 +14,27 @@ class DosesController < ApplicationController
 
   def create
     @dose = Dose.new(dose_params)
-    # we need `cocktail_id` to associate dose with corresponding cocktail
     @cocktail = Cocktail.find(params[:cocktail_id])
     @dose.cocktail = @cocktail
-    @dose.save
-    redirect_to cocktail_path(@cocktail)
+     if @dose.save
+      redirect_to cocktail_path(@cocktail)
+    else
+      render 'new'
+    end
   end
-
 
   def destroy
     @dose = Dose.find(params[:id])
     @dose.destroy
+    redirect_to cocktail_path(@dose.cocktail)
   end
 
 private
 
-  def cocktail_params
+  def dose_params
     # *Strong params*: You need to *whitelist* what can be updated by the user
     # Never trust user data!
-    params.require(:cocktail).permit(:name, :address)
+    params.require(:dose).permit(:description, :ingredient_id)
   end
 
 end
